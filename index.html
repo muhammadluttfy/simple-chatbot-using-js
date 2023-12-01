@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KadekBot</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 100px 50px;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+
+    #chat-container {
+      max-width: 400px;
+      margin: 50px auto;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    #chat-messages {
+      padding: 10px;
+      height: 300px;
+      overflow-y: scroll;
+    }
+
+    #user-input {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border: none;
+      border-top: 1px solid #ccc;
+      outline: none;
+    }
+
+    #send-button {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    // Menampilkan alert untuk meminta nama saat halaman direfresh
+    const userName = prompt("Masukkan nama Anda:");
+
+    if (userName !== null && userName !== "") {
+      alert("Selamat datang, " + userName + "!");
+    }
+
+    const chatData = {
+      "intents": [
+        {
+          "tag": "greeting",
+          "patterns": [
+            "hallo", "hai", "halo", "hei", "hi", "hy", "pagi", "morning", "siang", "afternoon", "sore", "malam", "bro", "sis", "kawan"
+          ],
+          "responses": [
+            "Hai! Kadekbot di sini. Mau tau informasi tentang apa nih?",
+            "Halo! Saya Kadekbot, salam kenal ya! Mau tau tentang kampus merdeka, kan?",
+            "Helo! Ini Kadekbot. Lagi kepo tentang kampus merdeka ya?"
+          ]
+        },
+        {
+          "tag": "goodbye",
+          "patterns": [
+            "Dah", "Dadah", "Bye", "Byee", "Good bye", "Selamat tinggal", "Sampai jumpa", "Bai", "See you"
+          ],
+          "responses": [
+            "Bye!", "Dadahh!", "Good bye!", "Dahh, semoga harimu menyenangkan yaa!", "Sampai jumpa lagi!", "See u! Senang bisa membantu"
+          ]
+        },
+        {
+          "tag": "terimakasih",
+          "patterns": [
+            "Thanks", "Thank you", "Terima kasih", "Makasih", "Terima kasih banyak"
+          ],
+          "responses": [
+            "Dengan senang hati:)"
+          ]
+        },
+        {
+          "tag": "penjelasan_kampus_merdeka",
+          "patterns": [
+            "Apa itu Kampus Merdeka?"
+          ],
+          "responses": [
+            "Kampus Merdeka merupakan kebijakan Menteri Pendidikan dan Kebudayaan Nadiem Makarim yang membebaskan mahasiswa untuk mengikuti kegiatan di luar program studinya selama 1 semester atau setara 20 sks dan paling lama 2 semester atau setara 40 sks."
+          ]
+        },
+      ]
+    };
+
+    const chatMessagesDiv = document.createElement('div');
+    chatMessagesDiv.id = 'chat-messages';
+    document.body.appendChild(chatMessagesDiv);
+
+    const userInputField = document.createElement('input');
+    userInputField.type = 'text';
+    userInputField.id = 'user-input';
+    userInputField.placeholder = 'Type your message...';
+    document.body.appendChild(userInputField);
+
+    const sendButton = document.createElement('button');
+    sendButton.id = 'send-button';
+    sendButton.textContent = 'Send';
+    sendButton.onclick = sendMessage;
+    document.body.appendChild(sendButton);
+
+    function sendMessage() {
+      const userMessage = userInputField.value.trim();
+      if (userMessage !== '') {
+        appendMessage('user', userName, userMessage);
+        handleResponse(userMessage);
+        userInputField.value = '';
+      }
+    }
+
+    function handleResponse(userMessage) {
+      const intent = findIntent(userMessage.toLowerCase());
+      if (intent) {
+        const response = getRandomResponse(intent.responses);
+        appendMessage('bot', '@Bot_Keren:', response);
+      } else {
+        appendMessage('bot', '@Bot_Keren:', "Maaf, saya tidak mengerti pertanyaan tersebut.");
+      }
+    }
+
+    function findIntent(userMessage) {
+      for (const intent of chatData.intents) {
+        for (const pattern of intent.patterns) {
+          if (userMessage.includes(pattern.toLowerCase())) {
+            return intent;
+          }
+        }
+      }
+      return null;
+    }
+
+    function getRandomResponse(responses) {
+      const randomIndex = Math.floor(Math.random() * responses.length);
+      return responses[randomIndex];
+    }
+
+    function appendMessage(sender, name, message) {
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+
+      // Tambahkan tag <strong> untuk membuat teks nama tebal
+      const nameText = document.createElement('strong');
+      nameText.textContent = name;
+
+      // Pisahkan nama dan pesan dengan tanda titik dua
+      const separator = document.createTextNode(': ');
+
+      // Tambahkan teks pesan
+      const messageText = document.createTextNode(message);
+
+      // Gabungkan semua elemen ke dalam div pesan
+      messageDiv.appendChild(nameText);
+      messageDiv.appendChild(separator);
+      messageDiv.appendChild(messageText);
+
+      chatMessagesDiv.appendChild(messageDiv);
+      chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+    }
+  </script>
+</body>
+
+</html>
